@@ -184,3 +184,69 @@ When you visit `http://localhost:5000/random_numbers` in your browser, you'll se
 
 This example demonstrates how to create a route that performs a function and dynamically displays its result in an HTML file, allowing you to integrate dynamic data into your web application.
 
+
+To make the random numbers update live without having to manually refresh the browser, you can use JavaScript and AJAX to periodically fetch updated numbers from the server and update the HTML content dynamically. Here's how you can modify your Flask application and HTML template to achieve this:
+
+1. Update the Flask route to return JSON data instead of rendering an HTML template:
+
+```python
+from flask import Flask, render_template, jsonify
+import random
+
+app = Flask(__name__)
+
+# ... Routes for Home, About, and Contact ...
+
+# Route 4: Generate Random Numbers (JSON)
+@app.route('/random_numbers')
+def generate_random_numbers():
+    # Generate three random numbers
+    random_numbers = [random.randint(1, 100) for _ in range(3)]
+    return jsonify(numbers=random_numbers)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+In this updated code, the `generate_random_numbers` function returns JSON data containing the randomly generated numbers.
+
+2. Modify the 'random_numbers.html' template to display the numbers and include JavaScript to update them dynamically:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Numbers</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function updateRandomNumbers() {
+            $.get('/random_numbers', function(data) {
+                var numbers = data.numbers;
+                var numbersList = '<ul>';
+                for (var i = 0; i < numbers.length; i++) {
+                    numbersList += '<li>' + numbers[i] + '</li>';
+                }
+                numbersList += '</ul>';
+                $('#randomNumbers').html(numbersList);
+            });
+        }
+
+        // Update the random numbers every 3 seconds (3000 milliseconds)
+        setInterval(updateRandomNumbers, 3000);
+    </script>
+</head>
+<body>
+    <h1>Random Numbers</h1>
+    <p>Here are three random numbers:</p>
+    <div id="randomNumbers"></div>
+</body>
+</html>
+```
+
+In this updated template:
+
+- We include the jQuery library for making AJAX requests.
+- The `updateRandomNumbers` JavaScript function makes an AJAX GET request to the `/random_numbers` route to fetch the updated random numbers and dynamically updates the content on the page.
+- We use the `setInterval` function to call `updateRandomNumbers` every 3 seconds, ensuring that the numbers are updated periodically without needing a manual refresh.
+
+Now, when you visit `http://localhost:5000/random_numbers` in your browser, you'll see the random numbers automatically updating every 3 seconds without the need for manual page refresh.
