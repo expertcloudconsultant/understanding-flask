@@ -124,3 +124,63 @@ With this setup, when you access the following URLs in your browser:
 - `http://localhost:5000/contact`, you'll see the "Contact Us" HTML template.
 
 This expanded example demonstrates how to use Flask to route to different HTML pages based on the requested URL, providing a more complete web application structure.
+
+
+To add a final route that performs a function and dynamically displays its result in an HTML file, you can create a route that generates random numbers and pass those numbers to an HTML template. Here's how you can do that:
+
+1. Update your Flask application with a new route and a function that generates random numbers:
+
+```python
+from flask import Flask, render_template
+import random
+
+app = Flask(__name__)
+
+# ... Routes for Home, About, and Contact ...
+
+# Route 4: Generate Random Numbers
+@app.route('/random_numbers')
+def generate_random_numbers():
+    # Generate three random numbers
+    random_numbers = [random.randint(1, 100) for _ in range(3)]
+    return render_template('random_numbers.html', numbers=random_numbers)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+In this code:
+
+- We import the `random` module to generate random numbers.
+- The `generate_random_numbers` function generates three random numbers between 1 and 100 and passes them as a list called `numbers` to the 'random_numbers.html' template.
+
+2. Create a new HTML template named `random_numbers.html` in the "templates" folder:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Numbers</title>
+</head>
+<body>
+    <h1>Random Numbers</h1>
+    <p>Here are three random numbers:</p>
+    <ul>
+        {% for number in numbers %}
+        <li>{{ number }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+```
+
+In this template:
+
+- We use template tags `{% ... %}` to loop through the `numbers` list and display each random number in an HTML list (`<ul>`).
+
+3. Now, when you access the URL `http://localhost:5000/random_numbers`, Flask will execute the `generate_random_numbers` function, generate three random numbers, and pass them to the 'random_numbers.html' template. The template will display these numbers dynamically.
+
+When you visit `http://localhost:5000/random_numbers` in your browser, you'll see a page with the title "Random Numbers" and three randomly generated numbers displayed in a list.
+
+This example demonstrates how to create a route that performs a function and dynamically displays its result in an HTML file, allowing you to integrate dynamic data into your web application.
+
